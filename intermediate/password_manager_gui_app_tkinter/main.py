@@ -70,12 +70,41 @@ def save_data():
         show_confirmation()
 
 
+# -------------------------- POP UPS TKINTER ------------------------ #
+
 def show_warning():
     messagebox.showinfo(title='Warning', message='You should fill all of the fields!')
 
 
 def show_confirmation():
     messagebox.showinfo(title='Confirmation', message='Data is saved')
+
+
+def show_data(website, email, password):
+    messagebox.showinfo(title=website, message=f"Email/Username: {email}\nPassword: {password}")
+
+
+def show_error():
+    messagebox.showinfo(title='No match', message='No details for the website exists.')
+
+
+# --------------------------- FIND PASSWORD --------------------------- #
+def find_password():
+    website_entry = website_input.get().title()
+    try:
+        with open('data.json', mode='r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title='Error', message='No Data File Found.')
+    else:
+
+        if website_entry in data:
+            email_or_username = data[website_entry]['email_or_username']
+            password = data[website_entry]['password']
+
+            show_data(website_entry, email_or_username, password)
+        else:
+            show_error()
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -93,8 +122,11 @@ canvas.grid(row=0, column=1)
 website_label = tkinter.Label(text='Website:')
 website_label.grid(row=1, column=0)
 
-website_input = tkinter.Entry(width=35)
-website_input.grid(row=1, column=1, columnspan=2)
+website_input = tkinter.Entry(width=25)
+website_input.grid(row=1, column=1)
+
+search_btn = tkinter.Button(text='Search', width=17, command=find_password)
+search_btn.grid(row=1, column=2)
 
 email_or_username_label = tkinter.Label(text='Email/Username:')
 email_or_username_label.grid(row=2, column=0)
