@@ -56,16 +56,16 @@ def save_data():
             with open('data.json', mode='r') as file:
                 data = json.load(file)
                 data.update(new_data)
-        except ValueError:
+        except FileNotFoundError:
             with open('data.json', mode='w') as file3:
                 json.dump(new_data, file3, indent=4)
         else:
             with open('data.json', mode='w') as file2:
                 json.dump(data, file2, indent=4)
-
-        website_input.delete(0, tkinter.END)
-        email_or_username_input.delete(0, tkinter.END)
-        password_input.delete(0, tkinter.END)
+        finally:
+            website_input.delete(0, tkinter.END)
+            email_or_username_input.delete(0, tkinter.END)
+            password_input.delete(0, tkinter.END)
 
         show_confirmation()
 
