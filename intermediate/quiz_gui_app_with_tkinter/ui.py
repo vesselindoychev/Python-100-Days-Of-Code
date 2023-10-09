@@ -1,4 +1,5 @@
 import tkinter
+import time
 from quiz_brain import QuizBrain
 
 THEME_COLOR = "#375362"
@@ -37,10 +38,12 @@ class QuizInterface:
         self.window.mainloop()
 
     def get_next_q(self):
-        try:
+        self.canvas.config(bg='white')
+        if self.quiz.still_has_questions():
+            self.score_label.config(text=f'Score: {self.score}')
             q_text = self.quiz.next_question()
             self.canvas.itemconfig(self.question_text, text=q_text)
-        except IndexError:
+        else:
             self.show_score()
             self.true_btn.grid_remove()
             self.false_btn.grid_remove()
@@ -50,16 +53,16 @@ class QuizInterface:
                                text=f"You've completed the quiz\nYour Final score was: {self.score}/10")
 
     def which_btn_is_pressed(self, btn_press):
-
         correct_answer = self.quiz.check_answer()
         if btn_press == 'True' and correct_answer == 'True':
             self.score += 1
-            self.score_label.config(text=f'Score: {self.score}')
-            self.get_next_q()
+            self.canvas.config(bg='green')
+            self.window.after(1000, self.get_next_q)
 
         elif btn_press == 'False' and correct_answer == 'False':
             self.score += 1
-            self.score_label.config(text=f'Score: {self.score}')
-            self.get_next_q()
+            self.canvas.config(bg='green')
+            self.window.after(1000, self.get_next_q)
         else:
-            self.get_next_q()
+            self.canvas.config(bg='red')
+            self.window.after(1000, self.get_next_q)
