@@ -57,7 +57,7 @@ day_before_yesterday_closing_price = float(closed_prices[1])
 
 difference = yesterday_closing_price - day_before_yesterday_closing_price
 
-diff_percent = (difference / yesterday_closing_price) * 100
+diff_percent = round((difference / yesterday_closing_price) * 100)
 print(difference)
 print(diff_percent)
 up_down = None
@@ -67,13 +67,14 @@ if difference > 0:
 else:
     up_down = '▼'
 
-for article in news_articles:
-    text = f"{STOCK_NAME}: {up_down}{round(diff_percent)}%\n" \
-           f"Headline: {article['title']}. ({STOCK_NAME})?\n" \
-           f"Brief: {article['description']}\n"
+if diff_percent > 1:
+    for article in news_articles:
+        text = f"{STOCK_NAME}: {up_down}{abs(diff_percent)}%\n" \
+            f"Headline: {article['title']}. ({STOCK_NAME})?\n" \
+            f"Brief: {article['description']}\n"
 
-    message = client.messages.create(
-        body=text,
-        from_=sender_phone_number,
-        to=receiver_phone_number
-    )
+        message = client.messages.create(
+            body=text,
+            from_=sender_phone_number,
+            to=receiver_phone_number
+        )
