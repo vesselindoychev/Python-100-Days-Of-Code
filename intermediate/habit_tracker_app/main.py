@@ -48,11 +48,15 @@ post_graph_endpoint = f"{graph_endpoint}/{graph_id}"
 
 current_date = datetime.now().strftime("%Y%m%d")
 
-
 post_graph_params = {
-    'date': current_date,
-    'quantity': '3.1'
+    'date': '20231010',
+    'quantity': '4.62'
 }
 
-post_response = requests.post(url=post_graph_endpoint, json=post_graph_params, headers=headers)
-print(post_response.text)
+# post_response = requests.post(url=post_graph_endpoint, json=post_graph_params, headers=headers)
+# print(post_response.text)
+
+put_graph_endpoint = f"{post_graph_endpoint}/20231010"
+
+# put_response = requests.put(url=put_graph_endpoint, json={'quantity': '7.25'}, headers=headers)
+# print(put_response.text)
