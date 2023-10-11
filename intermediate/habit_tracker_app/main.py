@@ -60,3 +60,7 @@ put_graph_endpoint = f"{post_graph_endpoint}/20231010"
 
 # put_response = requests.put(url=put_graph_endpoint, json={'quantity': '7.25'}, headers=headers)
 # print(put_response.text)
+
+delete_graph_endpoint = f"{post_graph_endpoint}/20231010"
+delete_response = requests.delete(url=delete_graph_endpoint, headers=headers)
+# print(delete_response.text)
