@@ -1,5 +1,4 @@
 import random
-
 import pandas
 import datetime as dt
 import smtplib
