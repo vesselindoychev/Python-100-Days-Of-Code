@@ -40,11 +40,17 @@ current_time = datetime.now().strftime('%H:%M:%S')
 SHEETY_USERNAME = os.environ['SHEETY_USERNAME']
 SHEETY_PROJECT_NAME = os.environ['SHEETY_PROJECT_NAME']
 SHEETY_NAME = os.environ['SHEETY_NANME']
+SHEETY_TOKEN = os.environ['SHEETY_TOKEN']
+
 
 sheety_endpoint = f'https://api.sheety.co/{SHEETY_USERNAME}/{SHEETY_PROJECT_NAME}/{SHEETY_NAME}'
 
 # sheety_response = requests.get(url=sheety_endpoint)
 # print(sheety_response.json())
+
+sheety_headers = {
+    'Authorization': f'Bearer {SHEETY_TOKEN}'
+}
 for exercise in result['exercises']:
     row_content = {
         'workout': {
@@ -55,5 +61,5 @@ for exercise in result['exercises']:
             'calories': exercise['nf_calories']
         }
     }
-    sheety_post_response = requests.post(url=sheety_endpoint, json=row_content)
+    sheety_post_response = requests.post(url=sheety_endpoint, json=row_content, headers=sheety_headers)
     print(sheety_post_response.json())
