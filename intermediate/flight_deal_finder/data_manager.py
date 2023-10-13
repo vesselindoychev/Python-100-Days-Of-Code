@@ -37,4 +37,3 @@ class DataManager:
 
             response = requests.put(url=f"{SHEETY_API_ENDPOINT}/{item['id']}", json=request_body,
                                     headers=SHEETY_HEADERS)
-            print(response.text)
