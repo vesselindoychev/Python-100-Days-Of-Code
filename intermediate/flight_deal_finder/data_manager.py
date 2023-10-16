@@ -1,7 +1,5 @@
-from flight_search import FlightSearch
 import os
 import requests
-from pprint import pprint
 from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
