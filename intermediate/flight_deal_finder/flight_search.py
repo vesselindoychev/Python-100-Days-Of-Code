@@ -1,4 +1,6 @@
 import os
+from pprint import pprint
+
 from flight_data import FlightData
 import requests
 from dotenv import load_dotenv
@@ -40,19 +42,37 @@ class FlightSearch:
         try:
             data = response.json()['data'][0]
         except IndexError:
-            print(f"No flights found for {destination_city_code}")
-            return None
+            query['max_stopovers'] = 1
+            response = requests.get(url=f"{TEQUILA_KIWI_API_ENDPOINT}/v2/search", headers=KIWI_HEADERS, params=query)
 
-        flight_data = FlightData(
-            price=data['price'],
-            origin_city=data['route'][0]['cityFrom'],
-            origin_airport=data['route'][0]['flyFrom'],
-            destination_city=data['route'][0]['cityTo'],
-            destination_airport=data['route'][0]['flyTo'],
-            out_date=data['route'][0]['local_departure'].split('T')[0],
-            return_date=data['route'][1]['local_departure'].split('T')[0]
-        )
+            data2 = response.json()['data']
+            if len(data2) == 0:
+                return None
+            data = response.json()['data'][0]
 
-        print(f"{flight_data.destination_city}: £{flight_data.price}")
-        flight_data.check_for_lowest_price()
-        return flight_data
+            flight_data = FlightData(
+                price=data['price'],
+                origin_city=data['route'][0]['cityFrom'],
+                origin_airport=data['route'][0]['flyFrom'],
+                destination_city=data['route'][0]['cityTo'],
+                destination_airport=data['route'][0]['flyTo'],
+                out_date=data['route'][0]['local_departure'].split('T')[0],
+                return_date=data['route'][1]['local_departure'].split('T')[0],
+                stop_overs=1,
+                via_city=data['route'][0]['cityTo']
+            )
+            return flight_data
+        else:
+            flight_data = FlightData(
+                price=data['price'],
+                origin_city=data['route'][0]['cityFrom'],
+                origin_airport=data['route'][0]['flyFrom'],
+                destination_city=data['route'][0]['cityTo'],
+                destination_airport=data['route'][0]['flyTo'],
+                out_date=data['route'][0]['local_departure'].split('T')[0],
+                return_date=data['route'][1]['local_departure'].split('T')[0]
+            )
+
+            print(f"{flight_data.destination_city}: £{flight_data.price}")
+            # flight_data.check_for_lowest_price()
+            return flight_data
