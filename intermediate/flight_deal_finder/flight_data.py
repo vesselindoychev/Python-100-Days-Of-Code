@@ -7,7 +7,7 @@ notification_manager = NotificationManager()
 
 class FlightData:
     def __init__(self, price, origin_city, origin_airport, destination_city, destination_airport, out_date,
-                 return_date):
+                 return_date, stop_overs=0, via_city=''):
         self.price = price
         self.origin_city = origin_city
         self.origin_airport = origin_airport
@@ -16,13 +16,5 @@ class FlightData:
         self.out_date = out_date
         self.return_date = return_date
 
-    def check_for_lowest_price(self):
-        all_destinations = data_manager.get_destination_data()
-
-        current_price = [item['lowestPrice'] for item in all_destinations if item['city'] == self.destination_city]
-
-        if self.price < int(current_price[0]):
-            text = f'Low price alert! Only £{self.price} to fly from {self.origin_city}-{self.origin_airport} to {self.destination_city}-{self.destination_airport}, '
-            f'from {self.out_date} to {self.return_date}.'
-
-            notification_manager.send_sms(text)
+        self.stop_overs = stop_overs
+        self.via_city = via_city
