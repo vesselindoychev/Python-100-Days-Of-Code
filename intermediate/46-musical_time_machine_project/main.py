@@ -17,7 +17,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIFY_CLIENT_ID,
                                                client_secret=SPOTIFY_CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
                                                scope='playlist-modify-private',
-                                               cache_path='token.txt'))
+                                               cache_path='token.env'))
 
 
 user_id = sp.current_user()['id']
