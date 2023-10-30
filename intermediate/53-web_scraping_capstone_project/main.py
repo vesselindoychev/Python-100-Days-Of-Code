@@ -40,6 +40,14 @@ class FindProperty:
                 if i.attrs['class'][0] == PROPERTY_CLASS:
                     self.property_items.append(i)
 
+    def get_links_of_property_ads(self):
+        main_url = 'https://www.zillow.com'
+        all_property_a_tags = self.soup.find_all(name='a', class_='property-card-link')
+        for prop_a in all_property_a_tags:
+            link = main_url + prop_a.get('href')
+            self.links.append(link)
+
 
 find_property = FindProperty()
 find_property.get_all_properties()
+find_property.get_links_of_property_ads()
