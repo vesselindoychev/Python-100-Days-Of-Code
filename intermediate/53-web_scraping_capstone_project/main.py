@@ -3,6 +3,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from selenium import webdriver
+import re
 
 load_dotenv(verbose=True)
 
@@ -47,7 +48,17 @@ class FindProperty:
             link = main_url + prop_a.get('href')
             self.links.append(link)
 
+    def get_all_property_prices(self):
+        all_prices = self.soup.select('[data-test=property-card-price]')
+        for p in all_prices:
+            if '+' in p.text:
+                price = p.text.split('+')
+            else:
+                price = p.text.split('/')
+                self.prices.append(price[0])
+
 
 find_property = FindProperty()
 find_property.get_all_properties()
 find_property.get_links_of_property_ads()
+find_property.get_all_property_prices()
