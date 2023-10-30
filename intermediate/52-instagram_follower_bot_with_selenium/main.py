@@ -65,11 +65,24 @@ class InstaFollower:
 
         time.sleep(2)
 
-
     def follow(self):
-        pass
+        popup_window = self.driver.find_element(By.XPATH,
+                                                '/html/body/div[5]/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[2]')
+        followers_list = self.driver.find_element(By.XPATH,
+                                                  '/html/body/div[5]/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[2]/div[1]/div')
+        while True:
+            self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollTop + arguments[0].offsetHeight;',
+                                       popup_window)
+            time.sleep(1)
+            btns = followers_list.find_elements(By.TAG_NAME, value='button')
+            follow_btns = [btn for btn in btns if btn.find_element(By.CSS_SELECTOR, value='div div').text == 'Follow']
+            for btn in follow_btns:
+                print(btn.text)
+                btn.click()
+                time.sleep(1)
 
 
 bot = InstaFollower(CHROME_DRIVER_PATH)
 bot.login()
 bot.find_followers()
+bot.follow()
