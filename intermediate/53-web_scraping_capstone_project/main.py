@@ -3,7 +3,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from selenium import webdriver
-import re
+
 
 load_dotenv(verbose=True)
 
@@ -57,8 +57,17 @@ class FindProperty:
                 price = p.text.split('/')
                 self.prices.append(price[0])
 
+    def get_all_property_addresses(self):
+        all_addresses = self.soup.select('[data-test=property-card-addr]')
+        for addr in all_addresses:
+            if '|' in addr.text:
+                address = addr.text.split('|')[1]
+            else:
+                address = addr.text
+            self.addresses.append(address)
 
 find_property = FindProperty()
 find_property.get_all_properties()
 find_property.get_links_of_property_ads()
 find_property.get_all_property_prices()
+find_property.get_all_property_addresses()
