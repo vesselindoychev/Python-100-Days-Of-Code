@@ -3,6 +3,7 @@ import time
 
 from dotenv import load_dotenv
 from selenium import webdriver
+from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 
 load_dotenv(verbose=True)
@@ -13,6 +14,7 @@ CHROME_OPTIONS.add_experimental_option('detach', True)
 CHROME_DRIVER_PATH = os.environ['CHROME_DRIVER_PATH2']
 INSTAGRAM_EMAIL = os.environ['INSTAGRAM_EMAIL']
 INSTAGRAM_PASSWORD = os.environ['INSTAGRAM_PASSWORD']
+ACCOUNT_TO_SEARCH = os.environ['SIMILAR_ACCOUNT']
 
 
 class InstaFollower:
@@ -40,10 +42,34 @@ class InstaFollower:
         login_btn.click()
 
     def find_followers(self):
-        pass
+        time.sleep(2)
+        search_btn = self.driver.find_element(By.XPATH,
+                                              '/html/body/div[2]/div/div/div[2]/div/div/div/div[1]/div[1]/div[1]/div/div/div/div/div[2]/div[2]/span/div/a')
+        search_btn.click()
+
+        time.sleep(2)
+        search_text_area = self.driver.find_element(By.XPATH,
+                                                    '/html/body/div[2]/div/div/div[2]/div/div/div/div[1]/div[1]/div[1]/div/div/div[2]/div/div/div[2]/div[1]/div[1]/input')
+        search_text_area.send_keys(ACCOUNT_TO_SEARCH)
+
+        time.sleep(2)
+
+        first_searched_user_link = self.driver.find_element(By.XPATH,
+                                                            '/html/body/div[2]/div/div/div[2]/div/div/div/div[1]/div[1]/div[1]/div/div/div[2]/div/div/div[2]/div[2]/div/div[1]/a')
+        first_searched_user_link.click()
+
+        time.sleep(3)
+        view_followers_btn = self.driver.find_element(By.XPATH,
+                                                      '/html/body/div[2]/div/div/div[2]/div/div/div/div[1]/div[1]/div[2]/div[2]/section/main/div/header/section/ul/li[2]/a')
+        view_followers_btn.click()
+
+        time.sleep(2)
+
+
     def follow(self):
         pass
 
 
 bot = InstaFollower(CHROME_DRIVER_PATH)
 bot.login()
+bot.find_followers()
