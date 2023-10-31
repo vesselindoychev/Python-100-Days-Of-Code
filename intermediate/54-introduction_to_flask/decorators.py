@@ -1,6 +1,30 @@
 import time
 
 
+def make_bold(func):
+    def wrapper():
+        res = func()
+        return f'<b>{res}</b>'
+
+    return wrapper
+
+
+def make_italic(func):
+    def wrapper():
+        res = func()
+        return f'<i>{res}</i>'
+
+    return wrapper
+
+
+def make_underlined(func):
+    def wrapper():
+        res = func()
+        return f'<u>{res}</u>'
+
+    return wrapper
+
+
 def delay_function(function):
     def wrapper_function():
         time.sleep(2)
