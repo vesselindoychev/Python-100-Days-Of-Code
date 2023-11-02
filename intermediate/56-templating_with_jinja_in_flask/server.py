@@ -1,6 +1,7 @@
 import datetime
 import random
 
+import requests
 from flask import Flask, render_template
 
 app = Flask(__name__)
@@ -15,6 +16,27 @@ def home():
         'year': current_year,
     }
     return render_template('index.html', **context)
+
+
+@app.route('/guess/<name>')
+def guess(name):
+    response = requests.get(url=f"https://api.genderize.io?name={name}")
+    response2 = requests.get(url=f"https://api.agify.io?name={name}")
+
+    data = response.json()
+    data2 = response2.json()
+
+    name = data['name'].title()
+    gender = data['gender']
+    years = data2['age']
+
+    context = {
+        'name': name,
+        'gender': gender,
+        'years': years,
+    }
+
+    return render_template('dashboard.html', **context)
 
 
 if __name__ == '__main__':
