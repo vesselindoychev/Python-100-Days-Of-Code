@@ -39,5 +39,15 @@ def guess(name):
     return render_template('dashboard.html', **context)
 
 
+@app.route('/blog')
+def blog():
+    response = requests.get(url='https://api.npoint.io/ae124e0a00e39c2791f2')
+    posts = response.json()
+    context = {
+        'posts': posts,
+    }
+    return render_template('blog.html', **context)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

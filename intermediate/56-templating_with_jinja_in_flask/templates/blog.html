@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for post in posts %}
+        {% if post['id'] == 2 %}
+            <article>
+                <h1>Title: {{ post['title'] }}</h1>
+                <p>Title id: {{ post['id'] }}</p>
+                <h3>Subtitle: {{ post['subtitle'] }}</h3>
+                <p>Body: {{ post['body'] }}</p>
+            </article>
+            <hr>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
