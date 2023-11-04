@@ -1,0 +1,119 @@
+.gradient-background {
+  background: linear-gradient(300deg, #00bfff, #ff4c68, #ef8172);
+  background-size: 180% 180%;
+  animation: gradient-animation 18s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.icon-square {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+}
+
+.profile-img {
+  height: 100px;
+  border-radius: 50%;
+}
+
+#apple-downl {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  color: black;
+  font-weight: 500;
+  border: none;
+}
+
+#apple-downl img {
+  margin-right: 3px;
+}
+
+#apple-downl:hover {
+  background-color: lightgray;
+}
+
+#android-downl {
+  color: white;
+  border: 1px solid white;
+}
+
+#android-downl i {
+  color: white;
+  font-size: 17px;
+  margin-right: 6px;
+
+}
+
+#android-downl:hover {
+  background-color: white;
+  color: black;
+  font-weight: 500;
+}
+
+#android-downl:hover i {
+  color: black;
+}
+
+.icon-square {
+  width: 42px;
+  height:42px;
+  margin-top: 4px;
+}
+
+.icon-square svg {
+  width: 28px;
+}
+
+.dog-img {
+  display: block;
+  margin: 60px auto 16px auto;
+  width: 140px;
+  border-radius: 50%;
+}
+
+.dog-img img {
+  width: 100%;
+  border-radius: 50%;
+}
+
+#images-holder {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#images-holder span {
+  width: 229px;
+}
+
+#images-holder span img {
+  max-width: 100%;
+}
+
+#images-holder span:last-child {
+  width: 137px;
+}
+
+#footer h5 {
+  font-size: 26px;
+}
+#footer li a{
+  font-size: 20px;
+}
+
+#footer-p {
+  margin-left: 90px;
+
+}
