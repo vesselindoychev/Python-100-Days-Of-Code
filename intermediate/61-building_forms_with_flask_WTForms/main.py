@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
 from wtforms import validators
-
+from flask_bootstrap import Bootstrap4
 '''
 Red underlines? Install the required packages first: 
 Open the Terminal in PyCharm (bottom left). 
@@ -18,10 +18,17 @@ This will install the packages from requirements.txt for this project.
 
 app = Flask(__name__)
 app.secret_key = 'some secret string'
+bootstrap = Bootstrap4(app)
+
 
 @app.route("/")
 def home():
     return render_template('index.html')
+
+
+@app.route('/base')
+def base():
+    return render_template('base.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -35,8 +42,10 @@ def login():
 
 
 class LoginForm(FlaskForm):
-    email = EmailField(label='Email', validators=[validators.DataRequired(), validators.Email()], render_kw={'placeholder': 'Enter email'})
-    password = PasswordField(label='Password', validators=[validators.DataRequired(), validators.Length(min=8)], render_kw={'placeholder': 'Enter password'})
+    email = EmailField(label='Email', validators=[validators.DataRequired(), validators.Email()],
+                       render_kw={'placeholder': 'Enter email'})
+    password = PasswordField(label='Password', validators=[validators.DataRequired(), validators.Length(min=8)],
+                             render_kw={'placeholder': 'Enter password'})
     submit_btn = SubmitField(label='Log in')
 
 
