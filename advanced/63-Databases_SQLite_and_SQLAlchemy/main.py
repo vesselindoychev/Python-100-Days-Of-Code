@@ -49,12 +49,6 @@ def home():
 def add():
     book_form = BookForm()
     if book_form.validate_on_submit():
-        # all_books.append({
-        #     'title': book_form.title.data,
-        #     'author': book_form.author.data,
-        #     'rating': book_form.rating.data
-        # })
-        # print(all_books)
         with app.app_context():
             new_book = Book(title=book_form.title.data, author=book_form.author.data, rating=book_form.rating.data)
             db.session.add(new_book)
@@ -73,6 +67,14 @@ def edit_rating(book_id):
         db.session.commit()
         return redirect(url_for('home'))
     return render_template('edit-rating.html', book=book, edit_form=edit_form)
+
+
+@app.route('/delete/<int:id>')
+def delete_book(id):
+    book = db.session.execute(db.select(Book).where(Book.id == id)).scalar()
+    db.session.delete(book)
+    db.session.commit()
+    return redirect(url_for('home'))
 
 
 if __name__ == "__main__":
