@@ -1,18 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Add Book</title>
-  </head>
-  <body>
-    <form action="" method="POST">
-      <label>Book Name</label>
-      <input type="text" />
-      <label>Book Author</label>
-      <input type="text" />
-      <label>Rating</label>
-      <input type="text" />
-      <button type="submit">Add Book</button>
-    </form>
-  </body>
-</html>
+{% extends 'index.html' %}
+{% from 'bootstrap4/form.html' import render_form %}
+
+{% block title %} <title>Add Book</title> {% endblock %}
+{% block content %}
+
+    {{book_form.csrf_token}}
+    {{render_form(book_form, novalidate=True)}}
+{% endblock %}}
