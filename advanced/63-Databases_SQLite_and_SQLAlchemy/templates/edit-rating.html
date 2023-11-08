@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+{% from 'bootstrap4/form.html' import render_form %}
+
+{% block title %} <title>Edit Rating</title> {% endblock %}
+{% block content %}
+    <p>Book Name: {{book.title}}</p>
+    <p>Current Rating: {{book.rating}}</p>
+    {{render_form(edit_form)}}
+
+{% endblock %}
