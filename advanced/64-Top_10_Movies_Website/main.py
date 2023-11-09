@@ -6,6 +6,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FloatField, validators
 from wtforms.validators import DataRequired
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv(verbose=True)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -15,6 +19,11 @@ bootstrap5 = Bootstrap5(app)
 
 db = SQLAlchemy()
 db.init_app(app)
+
+MOVIE_DB_API_KEY = os.environ['MOVIE_DB_API_KEY']
+MOVIE_DB_ACCESS_TOKEN = os.environ['MOVIE_DB_ACCESS_TOKEN']
+
+movie_db_url = f"https://api.themoviedb.org/3/search/movie?"
 
 
 class Movie(db.Model):
@@ -38,11 +47,36 @@ class EditMovieRatingForm(FlaskForm):
     submit = SubmitField(label='Done')
 
 
+class AddMovieForm(FlaskForm):
+    title = StringField(label='Movie Title', validators=[validators.DataRequired()])
+    submit = SubmitField(label='Add Movie')
+
+
 @app.route("/")
 def home():
     with app.app_context():
         all_movies = db.session.query(Movie).order_by(Movie.ranking.desc()).all()
     return render_template("index.html", movies=all_movies)
+
+
+@app.route('/add', methods=['GET', 'POST'])
+def add_movie():
+    form = AddMovieForm()
+    if form.validate_on_submit():
+        if request.method == 'POST':
+            movie_title = form.title.data
+            parameters = {
+                'query': movie_title,
+            }
+            headers = {
+                'accept': 'application/json',
+                'Authorization': f'Bearer {MOVIE_DB_ACCESS_TOKEN}'
+            }
+
+            response = requests.get(url=movie_db_url, headers=headers, params=parameters)
+            result = response.json()['results']
+            print(result)
+    return render_template('add.html', form=form)
 
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
