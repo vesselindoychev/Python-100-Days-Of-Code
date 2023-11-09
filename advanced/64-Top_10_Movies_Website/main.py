@@ -25,6 +25,8 @@ MOVIE_DB_ACCESS_TOKEN = os.environ['MOVIE_DB_ACCESS_TOKEN']
 
 movie_db_url = f"https://api.themoviedb.org/3/search/movie?"
 
+desired_movies = []
+
 
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,8 +61,17 @@ def home():
     return render_template("index.html", movies=all_movies)
 
 
+@app.route('/select')
+def select_movie():
+    global desired_movies
+    movies = desired_movies
+    desired_movies = []
+    return render_template('select.html', movies=movies)
+
+
 @app.route('/add', methods=['GET', 'POST'])
 def add_movie():
+    global desired_movies
     form = AddMovieForm()
     if form.validate_on_submit():
         if request.method == 'POST':
@@ -76,6 +87,8 @@ def add_movie():
             response = requests.get(url=movie_db_url, headers=headers, params=parameters)
             result = response.json()['results']
             print(result)
+            desired_movies = result
+            return redirect(url_for('select_movie'))
     return render_template('add.html', form=form)
 
 
