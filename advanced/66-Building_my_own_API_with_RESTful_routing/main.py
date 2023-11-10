@@ -65,6 +65,27 @@ def search_for_a_particular_cafe():
     return jsonify({'Not Found': 'Sorry, we don\'t have a cafe at that location.'}), 404
 
 
+@app.route('/add', methods=['POST'])
+def add_new_cafe():
+    new_cafe = Cafe(
+        name=request.args.get('name'),
+        map_url=request.args.get('map_url'),
+        img_url=request.args.get('img_url'),
+        location=request.args.get('location'),
+        seats=request.args.get('seats'),
+        has_toilet=bool(request.args.get('has_toilet')),
+        has_wifi=bool(request.args.get('has_wifi')),
+        has_sockets=bool(request.args.get('has_sockets')),
+        can_take_calls=bool(request.args.get('can_take_calls')),
+        coffee_price=request.args.get('coffee_price'),
+    )
+
+    if request.method == 'POST':
+        db.session.add(new_cafe)
+        db.session.commit()
+        return jsonify({'success': 'You have successfully added new cafe.'})
+
+
 ## HTTP GET - Read Record
 
 ## HTTP POST - Create Record
