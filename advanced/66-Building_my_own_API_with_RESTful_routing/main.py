@@ -86,6 +86,20 @@ def add_new_cafe():
         return jsonify({'success': 'You have successfully added new cafe.'})
 
 
+@app.route('/update-price/<int:id>', methods=['PATCH'])
+def update_cafe_price(id):
+    query_new_price = request.args.get('new_price')
+
+    current_cafe = db.session.execute(db.select(Cafe).where(Cafe.id == id)).scalar()
+    # cafe = db.get_or_404(Cafe, id)
+    if request.method == 'PATCH':
+        if current_cafe:
+            current_cafe.coffee_price = query_new_price
+            db.session.commit()
+            return jsonify({'Success': 'You have successfully updated the coffee price.'}), 200
+        return jsonify(error={'Not Found': 'Sorry, a cafe with that id was not found in the database.'}), 404
+
+
 ## HTTP GET - Read Record
 
 ## HTTP POST - Create Record
