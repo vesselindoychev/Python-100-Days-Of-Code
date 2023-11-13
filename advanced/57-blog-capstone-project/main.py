@@ -40,7 +40,7 @@ class CreateNewPost(FlaskForm):
     title = fields.StringField(label='Blog Post Title', validators=[validators.DataRequired()])
     subtitle = fields.StringField(label='Subtitle', validators=[validators.DataRequired()])
     author = fields.StringField(label='Your Name', validators=[validators.DataRequired()])
-    image_url = fields.URLField(label='Blog Image URL', validators=[validators.DataRequired(), validators.URL()])
+    img_url = fields.URLField(label='Blog Image URL', validators=[validators.DataRequired(), validators.URL()])
     body = CKEditorField(label='Blog Content', validators=[validators.DataRequired()])
     submit = fields.SubmitField(label='Submit Post')
 
@@ -57,7 +57,6 @@ def show_post(post_id):
     return render_template("post.html", post=requested_post)
 
 
-# TODO: add_new_post() to create a new blog post
 @app.route('/new-post', methods=['GET', 'POST'])
 def create_new_post():
     form = CreateNewPost()
@@ -73,14 +72,41 @@ def create_new_post():
                                     date=f"{month} {day}, {year}",
                                     body=form.body.data,
                                     author=form.author.data,
-                                    img_url=form.image_url.data)
+                                    img_url=form.img_url.data)
                 db.session.add(new_post)
                 db.session.commit()
             return redirect(url_for('get_all_posts'))
     return render_template('make-post.html', form=form)
 
 
-# TODO: edit_post() to change an existing blog post
+
+
+@app.route('/edit-post/<int:post_id>', methods=['GET', 'POST'])
+def edit_post(post_id):
+    today = datetime.datetime.now()
+    month = today.strftime('%B')
+    year = today.year
+    day = today.day
+    post = db.session.execute(db.select(BlogPost).where(BlogPost.id == post_id)).scalar()
+    form = CreateNewPost(
+        title=post.title,
+        subtitle=post.subtitle,
+        author=post.author,
+        img_url=post.img_url,
+        body=post.body
+    )
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.subtitle = form.subtitle.data
+        post.date = f"{month} {day}, {year}"
+        post.body = form.body.data
+        post.author = form.author.data
+        post.img_url = form.img_url.data
+
+        db.session.commit()
+        return redirect(url_for('show_post', post_id=post_id))
+    return render_template('make-post.html', form=form, is_edit=True)
+
 
 # TODO: delete_post() to remove a blog post from the database
 
