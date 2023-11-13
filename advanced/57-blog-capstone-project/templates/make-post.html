@@ -1,3 +1,4 @@
+{% from 'bootstrap5/form.html' import render_form %}
 {% block content %} {% include "header.html" %}
 
 <!-- Page Header -->
@@ -24,6 +25,11 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
+        {{form.csrf_token}}
+        {{render_form(form, novalidate=True)}}
+
+        {{ ckeditor.load() }}
+        {{ ckeditor.config(name='body' )}}
         <!-- TODO:-Add CKEditor and render the form here -->
       </div>
     </div>
