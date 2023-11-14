@@ -1,6 +1,7 @@
 import json
+import os.path
 
-from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory, session
+from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory, session, current_app
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -89,9 +90,10 @@ def logout():
     pass
 
 
-@app.route('/download')
+@app.route('/download', methods=['GET', 'POST'])
 def download():
-    pass
+    path = 'files/cheat_sheet.pdf'
+    return send_from_directory('static', as_attachment=True, path=path)
 
 
 if __name__ == "__main__":
