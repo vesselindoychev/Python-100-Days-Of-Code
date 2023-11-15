@@ -4,7 +4,7 @@ import werkzeug
 
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_bootstrap import Bootstrap5
-from flask_login import UserMixin, LoginManager, login_user, login_required, current_user
+from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
@@ -116,8 +116,14 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return redirect(url_for('get_all_posts'))
+        return redirect(url_for('secrets'))
     return render_template('register.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('get_all_posts'))
 
 
 @app.route('/view-post/<int:post_id>')
