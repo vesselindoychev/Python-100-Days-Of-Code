@@ -1,11 +1,13 @@
 import datetime
 import smtplib
+import werkzeug
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_bootstrap import Bootstrap5
-from flask_login import UserMixin
+from flask_login import UserMixin, LoginManager, login_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from werkzeug.security import generate_password_hash
 from wtforms import fields, validators
 from flask_ckeditor import CKEditor, CKEditorField
 import os
@@ -18,6 +20,8 @@ app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 app.config['CKEDITOR_PKG_TYPE'] = 'basic'
 Bootstrap5(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
 ckeditor = CKEditor(app)
 # CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -26,6 +30,11 @@ db.init_app(app)
 
 RECEIVER_EMAIL = os.environ['RECEIVER_EMAIL']
 PASSWORD = os.environ['PASSWORD']
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+    return db.get_or_404(User, user_id)
 
 
 # CONFIGURE TABLE
@@ -80,6 +89,35 @@ class CreateNewPost(FlaskForm):
 def get_all_posts():
     posts = db.session.execute(db.select(BlogPost)).scalars().all()
     return render_template("index.html", all_posts=posts)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        email = form.email.data
+        password = form.password.data
+        user = db.session.execute(db.select(User).where(User.email == email)).scalar()
+        if user:
+            flash('This email already exists. Please try with another email.')
+            return render_template('register.html', form=form)
+
+        hashed_password = generate_password_hash(password, salt_length=16)
+
+        new_user = User(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=hashed_password
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user)
+        return redirect(url_for('get_all_posts'))
+    return render_template('register.html', form=form)
 
 
 @app.route('/view-post/<int:post_id>')
