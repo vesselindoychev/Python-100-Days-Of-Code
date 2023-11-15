@@ -1,6 +1,6 @@
-{% include "header.html" %}
-
-<!-- Page Header-->
+{% extends 'header.html' %}
+{% block content %}
+{% block title %} <title>Contact</title> {% endblock %}
 <header
   class="masthead"
   style="background-image: url('../static/assets/img/contact-bg.jpg')"
@@ -96,5 +96,4 @@
     </div>
   </div>
 </main>
-
-{% include "footer.html" %}
+{% endblock %}
