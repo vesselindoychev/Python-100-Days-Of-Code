@@ -3,12 +3,14 @@ import smtplib
 
 from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap5
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import fields, validators
 from flask_ckeditor import CKEditor, CKEditorField
 import os
 from dotenv import load_dotenv
+
 load_dotenv(verbose=True)
 
 app = Flask(__name__)
@@ -25,6 +27,7 @@ db.init_app(app)
 RECEIVER_EMAIL = os.environ['RECEIVER_EMAIL']
 PASSWORD = os.environ['PASSWORD']
 
+
 # CONFIGURE TABLE
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,6 +37,14 @@ class BlogPost(db.Model):
     body = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(250), nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
+
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(250), nullable=False)
+    last_name = db.Column(db.String(250), nullable=False)
+    email = db.Column(db.String(250), unique=True, nullable=False)
+    password = db.Column(db.String(250), nullable=False)
 
 
 with app.app_context():
