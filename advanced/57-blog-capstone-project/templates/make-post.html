@@ -1,5 +1,7 @@
+{% extends 'header.html' %}
 {% from 'bootstrap5/form.html' import render_form %}
-{% block content %} {% include "header.html" %}
+{% block content %}
+{% block title %} <title>Create/Edit Post</title> {% endblock %}
 
 <!-- Page Header -->
 <header
@@ -39,4 +41,4 @@
     </div>
   </div>
 </main>
-{% include "footer.html" %} {% endblock %}
+{% endblock %}
