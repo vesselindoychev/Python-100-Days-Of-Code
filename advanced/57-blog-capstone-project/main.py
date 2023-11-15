@@ -4,7 +4,7 @@ import werkzeug
 
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_bootstrap import Bootstrap5
-from flask_login import UserMixin, LoginManager, login_user
+from flask_login import UserMixin, LoginManager, login_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
@@ -225,6 +225,12 @@ def send_email(sender_mail, text, name):
             to_addrs=RECEIVER_EMAIL,
             msg=f'Subject:Sent message by email: {sender_mail}\n\nName:{name}\n{text}'
         )
+
+
+@app.route('/secrets')
+@login_required
+def secrets():
+    return render_template('secrets.html', name=f"{current_user.first_name} {current_user.last_name}")
 
 
 if __name__ == "__main__":
