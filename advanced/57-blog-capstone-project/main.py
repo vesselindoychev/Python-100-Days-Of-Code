@@ -1,8 +1,10 @@
 import datetime
 import smtplib
+from functools import wraps
+
 import werkzeug
 
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, abort
 from flask_bootstrap import Bootstrap5
 from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -160,7 +162,18 @@ def show_post(post_id):
     return render_template("post.html", post=requested_post)
 
 
+def admin_only(f):
+    @wraps(f)
+    @login_required
+    def wrapper(*args, **kwargs):
+        if current_user.id != 2:
+            return abort(403)
+        return f(*args, **kwargs)
+    return wrapper
+
+
 @app.route('/new-post', methods=['GET', 'POST'])
+@admin_only
 def create_new_post():
     form = CreateNewPost()
     if request.method == 'POST':
@@ -183,6 +196,7 @@ def create_new_post():
 
 
 @app.route('/edit-post/<int:post_id>', methods=['GET', 'POST'])
+@admin_only
 def edit_post(post_id):
     today = datetime.datetime.now()
     month = today.strftime('%B')
@@ -210,6 +224,7 @@ def edit_post(post_id):
 
 
 @app.route('/delete/<int:post_id>')
+@admin_only
 def delete_post(post_id):
     post = db.session.execute(db.select(BlogPost).where(BlogPost.id == post_id)).scalar()
     db.session.delete(post)
