@@ -77,7 +77,8 @@ def register():
 
         user = db.session.execute(db.select(User).where(User.email == email)).scalar()
         if user:
-            return render_template('register.html', form=form, is_existing=True)
+            flash('User with this email already exists.')
+            return render_template('register.html', form=form)
 
         hashed_password = generate_password_hash(password, salt_length=16)
 
@@ -113,6 +114,10 @@ def login():
                 db.session.commit()
                 login_user(user)
                 return redirect(url_for('secrets'))
+            flash('Incorrect password, please try again.')
+            # return render_template('login.html', form=form)
+        else:
+            flash('Incorrect email, please try again.')
     return render_template("login.html", form=form)
 
 
