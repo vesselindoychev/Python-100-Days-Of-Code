@@ -7,7 +7,7 @@ from flask_bootstrap import Bootstrap5
 from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import fields, validators
 from flask_ckeditor import CKEditor, CKEditorField
 import os
@@ -128,9 +128,24 @@ def register():
     return render_template('register.html', form=form)
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    pass
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        user = db.session.execute(db.select(User).where(User.email == email)).scalar()
+
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user)
+                return redirect(url_for('secrets'))
+            flash('Incorrect password, please try again.')
+            return render_template('login.html', form=form)
+        flash('User with this email does noy exist.')
+        return render_template('login.html', form=form)
+    return render_template('login.html', form=form)
 
 
 @app.route('/logout')
