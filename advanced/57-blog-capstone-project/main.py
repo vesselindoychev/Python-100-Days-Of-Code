@@ -76,6 +76,14 @@ class RegistrationForm(FlaskForm):
     submit = fields.SubmitField(label='Sign up')
 
 
+class LoginForm(FlaskForm):
+    email = fields.EmailField(label='Email', validators=[validators.DataRequired(), validators.Email()],
+                              render_kw={'placeholder': 'ivan123@gmail.com'})
+    password = fields.PasswordField(label='Password', validators=[validators.DataRequired()],
+                                    render_kw={'placeholder': f"{20 * '*'}"})
+    submit = fields.SubmitField(label='Login')
+
+
 class CreateNewPost(FlaskForm):
     title = fields.StringField(label='Blog Post Title', validators=[validators.DataRequired()])
     subtitle = fields.StringField(label='Subtitle', validators=[validators.DataRequired()])
@@ -118,6 +126,11 @@ def register():
         login_user(new_user)
         return redirect(url_for('secrets'))
     return render_template('register.html', form=form)
+
+
+@app.route('/login')
+def login():
+    pass
 
 
 @app.route('/logout')
