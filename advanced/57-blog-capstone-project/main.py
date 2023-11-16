@@ -9,6 +9,7 @@ from flask_bootstrap import Bootstrap5
 from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import fields, validators
 from flask_ckeditor import CKEditor, CKEditorField
@@ -40,22 +41,26 @@ def user_loader(user_id):
 
 
 # CONFIGURE TABLE
-class BlogPost(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(250), unique=True, nullable=False)
-    subtitle = db.Column(db.String(250), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
-    body = db.Column(db.Text, nullable=False)
-    author = db.Column(db.String(250), nullable=False)
-    img_url = db.Column(db.String(250), nullable=False)
-
-
 class User(UserMixin, db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(250), nullable=False)
     last_name = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
+    posts = relationship('BlogPost', back_populates='author')
+
+
+class BlogPost(db.Model):
+    __tablename__ = 'blog_posts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250), unique=True, nullable=False)
+    subtitle = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.String(250), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    img_url = db.Column(db.String(250), nullable=False)
+    author = relationship('User', back_populates='posts')
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
 with app.app_context():
@@ -89,7 +94,7 @@ class LoginForm(FlaskForm):
 class CreateNewPost(FlaskForm):
     title = fields.StringField(label='Blog Post Title', validators=[validators.DataRequired()])
     subtitle = fields.StringField(label='Subtitle', validators=[validators.DataRequired()])
-    author = fields.StringField(label='Your Name', validators=[validators.DataRequired()])
+    # author = fields.StringField(label='Your Name', validators=[validators.DataRequired()])
     img_url = fields.URLField(label='Blog Image URL', validators=[validators.DataRequired(), validators.URL()])
     body = CKEditorField(label='Blog Content', validators=[validators.DataRequired()])
     submit = fields.SubmitField(label='Submit Post')
@@ -169,6 +174,7 @@ def admin_only(f):
         if current_user.id != 2:
             return abort(403)
         return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -187,7 +193,7 @@ def create_new_post():
                                     subtitle=form.subtitle.data,
                                     date=f"{month} {day}, {year}",
                                     body=form.body.data,
-                                    author=form.author.data,
+                                    author=current_user,
                                     img_url=form.img_url.data)
                 db.session.add(new_post)
                 db.session.commit()
@@ -206,7 +212,7 @@ def edit_post(post_id):
     form = CreateNewPost(
         title=post.title,
         subtitle=post.subtitle,
-        author=post.author,
+        author=current_user,
         img_url=post.img_url,
         body=post.body
     )
@@ -215,7 +221,7 @@ def edit_post(post_id):
         post.subtitle = form.subtitle.data
         post.date = f"{month} {day}, {year}"
         post.body = form.body.data
-        post.author = form.author.data
+        # post.author = form.author.data
         post.img_url = form.img_url.data
 
         db.session.commit()
