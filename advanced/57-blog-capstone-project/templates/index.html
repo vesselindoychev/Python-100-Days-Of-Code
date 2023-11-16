@@ -32,7 +32,7 @@
         <!-- TODO: Add code to delete posts below -->
         <p class="post-meta">
           Posted by
-          <a href="#">{{post.author}}</a>
+          <a href="#">{{post.author.first_name}} {{post.author.last_name}}</a>
           on {{post.date}}
           {% if not current_user or current_user.id == 2 %}
             <a href="{{ url_for('delete_post', post_id=post.id) }}">✘</a>
