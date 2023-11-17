@@ -39,6 +39,7 @@ PASSWORD = os.environ['PASSWORD']
 @login_manager.user_loader
 def user_loader(user_id):
     return db.get_or_404(User, user_id)
+    # return User
 
 
 # CONFIGURE TABLE
@@ -50,7 +51,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
     posts = relationship('BlogPost', back_populates='author')
-    comments = relationship('Comment', back_populates='creator')
+    user_comments = relationship('Comment', back_populates='creator')
 
 
 class BlogPost(db.Model):
@@ -63,18 +64,22 @@ class BlogPost(db.Model):
     img_url = db.Column(db.String(250), nullable=False)
     author = relationship('User', back_populates='posts')
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comments = relationship('Comment', back_populates='post')
+    post_comments = relationship('Comment', back_populates='post')
 
 
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text, nullable=False)
-    creator = relationship('User', back_populates='comments')
     creator_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    post = relationship('BlogPost', back_populates='comments')
+    creator = relationship('User', back_populates='user_comments')
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'))
+    post = relationship('BlogPost', back_populates='post_comments')
 
+
+"""
+CHANGE NAMES
+"""
 
 with app.app_context():
     db.create_all()
@@ -181,28 +186,31 @@ def logout():
 
 @app.route('/view-post/<int:post_id>', methods=['GET', 'POST'])
 def show_post(post_id):
-    requested_post = db.session.execute(db.select(BlogPost).where(BlogPost.id == post_id)).scalar()
+    is_commented = False
+    # requested_post = db.session.execute(db.select(BlogPost).where(BlogPost.id == post_id)).scalar()
     comment_form = CreateCommentForm()
-    # requested_post = db.get_or_404(BlogPost, post_id)
+    requested_post = db.get_or_404(BlogPost, post_id)
     current_comments_for_post = db.session.execute(
         db.select(Comment).where(Comment.post_id == requested_post.id)).scalars()
+    current_comments = requested_post.post_comments
+    for comment in current_comments:
+        if comment.creator_id == current_user.id:
+            is_commented = True
 
     gravatar = Gravatar(app, size=30, rating='g', default='retro', force_default=False, force_lower=False,
                         use_ssl=False, base_url=None)
     if comment_form.validate_on_submit():
         if current_user.is_authenticated:
-            with app.app_context():
-                new_comment = Comment(
-                    body=comment_form.body.data,
-                    creator=current_user,
-                    post_id=requested_post.id
-                )
-                db.session.add(new_comment)
-                db.session.commit()
-
-        # return redirect(url_for('get_all_posts'))
+            new_comment = Comment(
+                body=comment_form.body.data,
+                creator=current_user,
+                post_id=requested_post.id
+            )
+            db.session.add(new_comment)
+            db.session.commit()
+            return redirect(url_for('show_post', post_id=post_id))
     return render_template("post.html", post=requested_post, form=comment_form, current_user=current_user,
-                           comments=current_comments_for_post, gravatar=gravatar)
+                           comments=current_comments, gravatar=gravatar, is_commented=is_commented)
 
 
 def admin_only(f):
