@@ -40,23 +40,20 @@
         {% endif %}
         <hr>
         {% if current_user.is_authenticated %}
-            {% for comment in post.comments %}
-              {% if comment.creator_id != current_user.id %}
+          {% if not is_commented %}
                 <div>
                   {{ form.csrf_token }}
                   {{ render_form(form) }}
                   {{ ckeditor.load() }}
                   {{ ckeditor.config(name='body' )}}
                 </div>
-
-              {% endif %}
-            {% endfor %}
+          {% endif %}
 
         {% endif %}
         {% if comments %}
           <div class="comment">
             <ul class="commentList">
-              {% for comment in post.comments %}
+              {% for comment in post.post_comments %}
                 <li>
                   <div class="commenterImage"><img src="{{comment.creator.email | gravatar}}" alt="img"></div>
                   <div class="commentText">
