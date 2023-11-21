@@ -1,26 +1,22 @@
 import datetime
 import smtplib
 from functools import wraps
-
-import werkzeug
-
 from flask import Flask, render_template, redirect, url_for, request, flash, abort
 from flask_bootstrap import Bootstrap5
 from flask_gravatar import Gravatar
 from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms import fields, validators
-from flask_ckeditor import CKEditor, CKEditorField
+from flask_ckeditor import CKEditor
 import os
 from dotenv import load_dotenv
+from forms import RegistrationForm, LoginForm, CreateNewPost, CreateCommentForm
 
 load_dotenv(verbose=True)
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ['FLASK_KEY']
 app.config['CKEDITOR_PKG_TYPE'] = 'basic'
 Bootstrap5(app)
 
@@ -28,7 +24,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 ckeditor = CKEditor(app)
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URI']
 db = SQLAlchemy()
 db.init_app(app)
 
@@ -83,44 +79,6 @@ CHANGE NAMES
 
 with app.app_context():
     db.create_all()
-
-
-class RegistrationForm(FlaskForm):
-    first_name = fields.StringField(label='First Name',
-                                    validators=[validators.DataRequired(), validators.Length(min=3)],
-                                    render_kw={'placeholder': 'Ivan'})
-    last_name = fields.StringField(label='Last Name', validators=[validators.DataRequired(), validators.Length(min=3)],
-                                   render_kw={'placeholder': 'Petrov'})
-    email = fields.EmailField(label='Email', validators=[validators.DataRequired(), validators.Email()],
-                              render_kw={'placeholder': 'ivan123@gmail.com'})
-    password = fields.PasswordField(label='Password', validators=[validators.DataRequired(), validators.Length(min=5)],
-                                    render_kw={'placeholder': f'{5 * "*"}'})
-    confirm_password = fields.PasswordField(label='Confirm Password',
-                                            validators=[validators.DataRequired(), validators.EqualTo('password')],
-                                            render_kw={'placeholder': f'Retype your password'})
-    submit = fields.SubmitField(label='Sign up')
-
-
-class LoginForm(FlaskForm):
-    email = fields.EmailField(label='Email', validators=[validators.DataRequired(), validators.Email()],
-                              render_kw={'placeholder': 'ivan123@gmail.com'})
-    password = fields.PasswordField(label='Password', validators=[validators.DataRequired()],
-                                    render_kw={'placeholder': f"{20 * '*'}"})
-    submit = fields.SubmitField(label='Login')
-
-
-class CreateNewPost(FlaskForm):
-    title = fields.StringField(label='Blog Post Title', validators=[validators.DataRequired()])
-    subtitle = fields.StringField(label='Subtitle', validators=[validators.DataRequired()])
-    # author = fields.StringField(label='Your Name', validators=[validators.DataRequired()])
-    img_url = fields.URLField(label='Blog Image URL', validators=[validators.DataRequired(), validators.URL()])
-    body = CKEditorField(label='Blog Content', validators=[validators.DataRequired()])
-    submit = fields.SubmitField(label='Submit Post')
-
-
-class CreateCommentForm(FlaskForm):
-    body = CKEditorField(label='Comment')
-    submit = fields.SubmitField('Submit Comment')
 
 
 @app.route('/')
@@ -217,7 +175,7 @@ def admin_only(f):
     @wraps(f)
     @login_required
     def wrapper(*args, **kwargs):
-        if current_user.id != 2:
+        if current_user.id != 1:
             return abort(403)
         return f(*args, **kwargs)
 
@@ -340,4 +298,4 @@ def secrets():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5003)
+    app.run(debug=False)
